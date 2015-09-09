@@ -106,8 +106,13 @@ module Database
   class Remote < Base
     def initialize(cap_instance)
       super(cap_instance)
-      @config = @cap.capture("cat #{@cap.current_path}/config/database.yml")
-      @config = YAML.load(ERB.new(@config).result)[@cap.fetch(:rails_env).to_s]
+      @cap.within @cap.current_path do
+        @cap.with rails_env: @cap.fetch(:rails_env) do
+          @config = @cap.capture(:rails, 'runner "puts Rails.application.config.database_configuration[Rails.env].to_yaml"', '2>/dev/null')
+          @config.gsub!(/.*\-\-\-/m, '---') # Remove all bundler and rails initialization errors
+        end
+      end
+      @config = YAML.load(@config)
     end
 
     def dump
