@@ -108,7 +108,7 @@ module Database
       super(cap_instance)
       @cap.within @cap.current_path do
         @cap.with rails_env: @cap.fetch(:rails_env) do
-          @config = @cap.capture(:rails, 'runner "puts Rails.application.config.database_configuration[Rails.env].to_yaml"', '2>/dev/null')
+          @config = @cap.capture(:rails, 'runner "puts ActiveRecord::Base.connection.instance_variable_get(:@config).to_yaml"', '2>/dev/null')
           @config.gsub!(/.*\-\-\-/m, '---') # Remove all bundler and rails initialization errors
         end
       end
