@@ -109,7 +109,8 @@ module Database
       @cap.within @cap.current_path do
         @cap.with rails_env: @cap.fetch(:rails_env) do
           @config = @cap.capture(:rails, 'runner "puts ActiveRecord::Base.connection.instance_variable_get(:@config).to_yaml"', '2>/dev/null')
-          @config.gsub!(/.*\-\-\-/m, '---') # Remove all bundler and rails initialization errors
+          # Remove all bundler and rails initialization warnings and errors
+          @config = @config.split($/)[@config.split($/).rindex("---")..-1].join($/)
         end
       end
       @config = YAML.load(@config)
