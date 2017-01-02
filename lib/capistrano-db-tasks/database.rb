@@ -144,11 +144,11 @@ module Database
     private
 
     def db_dump_file_path
-      "#{db_dump_dir}/#{output_file}"
+      File.join(db_dump_dir, output_file)
     end
 
     def db_dump_dir
-      @cap.fetch(:db_dump_dir) || "#{@cap.current_path}/db"
+      @cap.fetch(:db_dump_dir, File.join(@cap.current_path, 'db'))
     end
   end
 
